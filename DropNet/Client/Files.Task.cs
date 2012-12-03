@@ -13,7 +13,7 @@ namespace DropNet
 {
     public partial class DropNetClient
     {
-		public Task<MetaData> GetMetaDataTask(string path, bool needDirContents)
+		public Task<MetaData> GetMetaDataTask(string path, bool needDirContents, CancellationToken token = default(CancellationToken))
 		{
 			if (!string.IsNullOrEmpty(path) && !path.StartsWith("/"))
 			{
@@ -22,7 +22,7 @@ namespace DropNet
 			
 			var request = _requestHelper.CreateMetadataRequest(path, Root, needDirContents);
 			
-			return ExecuteTask<MetaData>(ApiType.Base, request);
+			return ExecuteTask<MetaData>(ApiType.Base, request, token);
 		}
 		
 		public Task<MetaData> GetMetaDataTask(string path, string hash, bool needDirContents)
