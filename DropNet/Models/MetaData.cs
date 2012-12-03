@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace DropNet.Models
 {
@@ -19,23 +20,31 @@ namespace DropNet.Models
 		public string Rev { get; set; }
         public List<MetaData> Contents { get; set; }
 
-        public DateTime ModifiedDate
+        private Lazy<DateTime> _modifiedDate;
+
+        public MetaData ()
         {
-            get
-            {
-                //cast to datetime and return
-                return DateTime.Parse(Modified); //RFC1123 format date codes are returned by API
-            }
+            _modifiedDate = new Lazy<DateTime> (ParseModifiedDate);
         }
 
-		 public DateTime UTCDateModified
+        DateTime ParseModifiedDate ()
+        {
+            return DateTime.ParseExact (Modified, "ddd, d MMM yyyy HH:mm:ss K", CultureInfo.InvariantCulture);
+        }
+
+        public DateTime ModifiedDate
+        {
+            get { return _modifiedDate.Value; }
+        }
+
+		public DateTime UTCDateModified
         {
             get
             {
                 string str = Modified;
                 if (str.EndsWith(" +0000")) str = str.Substring(0, str.Length - 6);
                 if (!str.EndsWith(" UTC")) str += " UTC";
-                return DateTime.ParseExact(str, "ddd, d MMM yyyy HH:mm:ss UTC", System.Globalization.CultureInfo.InvariantCulture);
+                return DateTime.ParseExact(str, "ddd, d MMM yyyy HH:mm:ss UTC", CultureInfo.InvariantCulture);
             }
             set
             {
@@ -43,8 +52,6 @@ namespace DropNet.Models
             }
         }
 
-		
-		
         public string Name
         {
             get
