@@ -25,15 +25,17 @@ namespace DropNet
 			return ExecuteTask<MetaData>(ApiType.Base, request, token);
 		}
 		
-		public Task<MetaData> GetMetaDataTask(string path, string hash, bool needDirContents)
+        public Task<MetaData> GetMetaDataTask(string path, string hash, bool needDirContents, CancellationToken token = default(CancellationToken))
 		{
 			if (path != "" && !path.StartsWith("/")) path = "/" + path;
 			
 			var request = _requestHelper.CreateMetadataRequest(path, Root, needDirContents);
 			
-			request.AddParameter("hash", hash);
+            if (hash != null) {
+    			request.AddParameter("hash", hash);
+            }
 			
-			return ExecuteTask<MetaData>(ApiType.Base, request);
+			return ExecuteTask<MetaData>(ApiType.Base, request, token);
 		}
 
         public Task<List<MetaData>> SearchTask(string searchString)
