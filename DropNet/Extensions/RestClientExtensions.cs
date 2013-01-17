@@ -19,6 +19,11 @@ namespace DropNet.Extensions
 			) where TResult : new()
 		{
 			var tcs = new TaskCompletionSource<TResult>();
+            if (token.IsCancellationRequested) {
+                tcs.SetCanceled ();
+                return tcs.Task;
+            }
+
 			try {
                 lock (_lock) {
     				var async = client.ExecuteAsync<TResult>(request, (response, _) => {
@@ -48,6 +53,11 @@ namespace DropNet.Extensions
 		public static Task<IRestResponse> ExecuteTask(this IRestClient client, IRestRequest request, CancellationToken token = default(CancellationToken))
 		{
 			var tcs = new TaskCompletionSource<IRestResponse>();
+            if (token.IsCancellationRequested) {
+                tcs.SetCanceled ();
+                return tcs.Task;
+            }
+
 			try {
                 lock (_lock) {
     				var async = client.ExecuteAsync(request, (response, _) => {
